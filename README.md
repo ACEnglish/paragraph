@@ -174,3 +174,42 @@ If you have multiple events listed in the input JSON, `multigrmpy.py` can help y
 
 The [LICENSE](LICENSE) file contains information about libraries and other tools we use, 
 and license information for these.
+
+## English Edits
+
+To make paragraph easier to run, there have been some edits to the codebase.
+
+* Docker's `ENTRYPOINT` has been replaced with a helper script `src/sh/run_paragraph.sh`
+
+* This script currently assumes you've already bulid the json reference vcf and it's provided as an input (this removes
+  the graph creation time to speed up paragraph)
+
+* `src/python/bin/multigrmpy.py` is edited to use the input vcf as a template vcf and create a vcf output, even though
+  input is json.
+
+* A manifest.txt file is created from parameters if provided
+
+* If the parameters aren't provided, a script `src/python/bin/qbamstat.py` is run to pull the sample id 
+  (RG:SM) from the header, and estimates the depth and readlength (not super safe, but probably will work with WGS)
+
+
+### Parameters to run the new `ENTRYPOINT`
+
+* -v (required) : vcf file to use as a template for the output vcf
+* -j (required) : json file holding the already converted graph
+* -b (required) : bam/cram input file
+* -r (required) : reference file
+* -o : output directory name ('results')
+* -s : sample id for the mainfest.txt
+* -d : depth for the mainfest.txt
+* -l : readlength for the mainfest.txt
+* -t : thread count to use (all)
+
+Run the docker file with command:
+
+```bash
+docker run -v `pwd`:/data -it $ID -v /data/na12878.vcf.gz -j /data/na12878.json -b /data/na12878.bam -r /data/reference.fasta
+```
+
+Where `$ID` is the docker image's id returned by `docker images`
+

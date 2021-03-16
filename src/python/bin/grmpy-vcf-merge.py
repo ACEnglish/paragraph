@@ -38,7 +38,8 @@ def make_argument_parser():
                         type=str, dest="input_grm", required=True)
 
     parser.add_argument("-o", "--output", help="Output file name.", type=str, dest="output", default="-")
-
+ 
+    parser.add_argument("-s", "--sample", help="Sample Name", type=str, default=None)
     parser.add_argument("--logfile", dest="logfile", default=None,
                         help="Write logging information into file rather than to stderr")
 
@@ -73,10 +74,10 @@ def run(args):
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
     logging.basicConfig(filename=args.logfile, format='%(asctime)s %(levelname)-8s %(message)s', level=loglevel)
-
+    logging.critical(args.sample)
     try:
         grmpyOutput = vcfupdate.read_grmpy(args.input_grm)
-        vcfupdate.update_vcf_from_grmpy(args.input, grmpyOutput, args.output)
+        vcfupdate.update_vcf_from_grmpy(args.input, grmpyOutput, args.output, [args.sample])
     except Exception:  # pylint: disable=W0703
         traceback.print_exc(file=LoggingWriter(logging.ERROR))
         raise

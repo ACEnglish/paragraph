@@ -128,6 +128,9 @@ def make_argument_parser():
 
     parser.add_argument("-o", "--output", help="Output directory.", type=str, dest="output", required=True)
 
+    parser.add_argument("-b", "--base-vcf", type=str,
+                        help="When input is a JSON, use this base-vcf as a template VCF to output VCF")
+
     parser.add_argument("-A", "--write-alignments", dest="write_alignments",
                         help="Write alignment JSON files into the output folder (large!).",
                         default=False, action="store_true")
@@ -331,7 +334,17 @@ def run(args):
                     id_index = fields.index("id")
                     continue
                 sample_names.append(fields[id_index])
-        if args.input.endswith("vcf") or args.input.endswith("vcf.gz"):
+        # JSON input but VCF output
+        # else if VCF input, output vcf
+        if args.base_vcf is not None: 
+            grmpyOutput = vcfupdate.read_grmpy(result_json_path)
+            result_vcf_path = os.path.join(args.output, "genotypes.vcf.gz")
+            vcf_input_path = os.path.join(args.base_vcf)
+            if not os.path.exists(vcf_input_path) or not os.path.isfile(vcf_input_path):
+                raise Exception("Could not find base-vcf")
+                vcf_input_path = args.input
+            vcfupdate.update_vcf_from_grmpy(vcf_input_path, grmpyOutput, result_vcf_path, sample_names)
+        elif args.input.endswith("vcf") or args.input.endswith("vcf.gz"):
             grmpyOutput = vcfupdate.read_grmpy(result_json_path)
             result_vcf_path = os.path.join(args.output, "genotypes.vcf.gz")
             vcf_input_path = os.path.join(args.output, "variants.vcf.gz")
