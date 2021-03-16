@@ -189,8 +189,8 @@ To make paragraph easier to run, there have been some edits to the codebase.
 
 * A manifest.txt file is created from parameters if provided
 
-* If the parameters aren't provided, a script `src/python/bin/qbamstat.py` is run to pull the sample id 
-  (RG:SM) from the header, and estimates the depth and readlength (not super safe, but probably will work with WGS)
+* If the parameters aren't provided, a script (`src/python/bin/qbamstat.py`) is run to pull the sample id 
+  (@RG:SM) from the header, and estimates the depth and readlength (not super safe, but probably will work with WGS)
 
 
 ### Parameters to run the new `ENTRYPOINT`
@@ -209,8 +209,11 @@ Build/Run the docker file with commands:
 
 ```bash
 docker build -t paragraph .
-docker run -v `pwd`:/data -it paragraph -v /data/na12878.vcf.gz -j /data/na12878.json -b /data/na12878.bam -r /data/reference.fasta
+docker run -v `pwd`:/data -it paragraph -v /data/na12878.vcf.gz \
+					-j /data/na12878.json \
+					-b /data/na12878.bam \
+					-r /data/reference.fasta
 ```
 
-Where `pwd` can be whatever directory you'd like to mount in the docker on that path `/data`/
+Where `pwd` can be whatever directory you'd like to mount in the docker to the path `/data/`
 

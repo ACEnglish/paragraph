@@ -17,30 +17,24 @@ NRGN=100
 # If fewer than MINPASS regions have reads, exit with an error
 MINPASS=80
 
-readlensum = 0
-readcnt = 0
+readlen = 0
+cnt = 0
 covsum = 0
-covcnt = 0
 
 while NRGN > 0:
     NRGN -= 1
     pos = random.randint(1, reflen)
     try:
-        readlensum += next(bam.fetch(chrom, pos, pos + RGNSZ)).qlen
-        readcnt += 1
+        readlen = max(readlen, next(bam.fetch(chrom, pos, pos + RGNSZ)).qlen)
     except Exception as e:
         continue
     c = bam.count_coverage(chrom, pos, pos + RGNSZ)
-    cov = [sum(x) for x in zip(*c)]
-    cov = sum([sum(x) for x in zip(*c)]) 
-    msum = cov / RGNSZ
-    covsum += msum
-    covcnt += 1
+    covsum += sum([sum(x) for x in zip(*c)]) / RGNSZ
+    cnt += 1
 
-if covcnt < MINPASS:
-    sys.stderr.write(f"Could only get reads from {covcnt} regions. Coverage may be inaccurate\n")
+if cnt < MINPASS:
+    sys.stderr.write(f"Could only get reads from {cnt} regions. Coverage may be inaccurate\n")
 
-coverage = int(covsum / covcnt)
-readlen = int(readlensum / readcnt)
+coverage = int(covsum / cnt)
 print("#id\tpath\tdepth\tread length")
 print(f"{sample}\t{bam_name}\t{coverage}\t{readlen}")
