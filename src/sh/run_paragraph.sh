@@ -65,7 +65,7 @@ elif [ ! -f "$BAM" ]; then
     LOGE "$BAM does not exist."
     HASERROR=true
 else
-    LOGE "bam:" $BAM
+    LOG "bam:" $BAM
 fi
 
 if [ -z "${REF}" ]
