@@ -29,5 +29,4 @@ RUN rm -rf /opt/paragraph-source
 
 ADD src/sh/run_paragraph.sh .
 
-ENTRYPOINT ["run_paragraph.sh"]
-
+ENTRYPOINT ["/bin/bash", "run_paragraph.sh"]

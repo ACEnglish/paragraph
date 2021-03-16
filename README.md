@@ -181,7 +181,7 @@ To make paragraph easier to run, there have been some edits to the codebase.
 
 * Docker's `ENTRYPOINT` has been replaced with a helper script `src/sh/run_paragraph.sh`
 
-* This script currently assumes you've already bulid the json reference vcf and it's provided as an input (this removes
+* This script currently assumes you've already bulit the json reference vcf and it's provided as an input (this removes
   the graph creation time to speed up paragraph)
 
 * `src/python/bin/multigrmpy.py` is edited to use the input vcf as a template vcf and create a vcf output, even though
@@ -205,11 +205,12 @@ To make paragraph easier to run, there have been some edits to the codebase.
 * -l : readlength for the mainfest.txt
 * -t : thread count to use (all)
 
-Run the docker file with command:
+Build/Run the docker file with commands:
 
 ```bash
-docker run -v `pwd`:/data -it $ID -v /data/na12878.vcf.gz -j /data/na12878.json -b /data/na12878.bam -r /data/reference.fasta
+docker build -t paragraph .
+docker run -v `pwd`:/data -it paragraph -v /data/na12878.vcf.gz -j /data/na12878.json -b /data/na12878.bam -r /data/reference.fasta
 ```
 
-Where `$ID` is the docker image's id returned by `docker images`
+Where `pwd` can be whatever directory you'd like to mount in the docker on that path `/data`/
 

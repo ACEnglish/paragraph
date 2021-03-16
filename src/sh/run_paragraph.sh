@@ -2,6 +2,14 @@
 
 set -oe pipefail
 
+function LOG {
+    echo -e "[$(date)] [INFO]" $@
+}
+
+function LOGE {
+    echo -e "[$(date)] [ERROR]" $@
+}
+
 # Entrypoint script for basic paragraph running
 GRMPY=/opt/paragraph-build/bin/multigrmpy.py
 QBAMSTAT=/opt/paragraph-build/bin/qbamstat.py
@@ -26,52 +34,53 @@ done
 ####
 HASERROR=false
 
-echo "vcf:" $VCF
+LOG "Checking Parameters"
 if [ -z "${VCF}" ]
 then
-    echo "VCF (-v) must be provided"
+    LOGE "VCF (-v) must be provided"
     HASERROR=true
-fi
-if [ ! -f "$VCF" ]; then
-    echo "$VCF does not exist."
+elif [ ! -f "$VCF" ]; then
+    LOGE "$VCF does not exist."
     HASERROR=true
+else
+    LOG "vcf:" $VCF
 fi
 
-echo "json:" $JSON
 if [ -z "${JSON}" ]
 then
-    echo "JSON (-j) must be provided"
+    LOGE "JSON (-j) must be provided"
     HASERROR=true
-fi
-if [ ! -f "$JSON" ]; then
-    echo "$JSON does not exist."
+elif [ ! -f "$JSON" ]; then
+    LOGE "$JSON does not exist."
     HASERROR=true
+else
+    LOG "json:" $JSON
 fi
 
-echo "bam:" $BAM
 if [ -z "${BAM}" ]
 then
-    echo "BAM (-b) must be provided"
+    LOGE "BAM (-b) must be provided"
     HASERROR=true
-fi
-if [ ! -f "$BAM" ]; then
-    echo "$BAM does not exist."
+elif [ ! -f "$BAM" ]; then
+    LOGE "$BAM does not exist."
     HASERROR=true
+else
+    LOGE "bam:" $BAM
 fi
 
-echo "reference:" $REF
 if [ -z "${REF}" ]
 then
-    echo "REF (-r) must be provided"
+    LOGE "REF (-r) must be provided"
     HASERROR=true
-fi
-if [ ! -f "$REF" ]; then
-    echo "$REF does not exist."
+elif [ ! -f "$REF" ]; then
+    LOGE "$REF does not exist."
     HASERROR=true
+else
+    LOG "reference:" $REF
 fi
 
 if [ $HASERROR = true ]; then
-    echo "Error parsing parameters. Exiting"
+    LOGE "Error parsing parameters. Exiting"
     exit 1
 fi
 
@@ -81,17 +90,17 @@ fi
 if [ -z "${THREADS}" ]
 then
     THREADS=$(nproc)
-    echo "THREADS (-t) set to ${THREADS}"
+    LOG "THREADS (-t) set to ${THREADS}"
 else
-    echo "threads:" $THREADS
+    LOG "threads:" $THREADS
 fi
 
 if [ -z "${OUT}" ]
 then
     OUT="result"
-    echo "OUT (-o) set to ${OUT}"
+    LOG "OUT (-o) set to ${OUT}"
 else
-    echo "out:" $OUT
+    LOG "out:" $OUT
 fi
 
 # If depth/readlength/sample is not set, estimate them from the input bam
@@ -99,28 +108,28 @@ fi
 HASERROR=false
 if [ -z "${SAMPLE}" ]
 then
-    echo "SAMPLE (-s) unset"
+    LOG "SAMPLE (-s) unset"
     HASERROR=true
 else
-    echo "sample:" $SAMPLE
+    LOG "sample:" $SAMPLE
 fi
 if [ -z "${DEPTH}" ]
 then
-    echo "DEPTH (-d) unset"
+    LOG "DEPTH (-d) unset"
     HASERROR=true
 else
-    echo "depth:" $DEPTH
+    LOG "depth:" $DEPTH
 fi
 if [ -z "${RL}" ]
 then
-    echo "RL (-l) unset"
+    LOG "RL (-l) unset"
     HASERROR=true
 else
-    echo "readlen:" $RL
+    LOG "readlen:" $RL
 fi
 
 if [ $HASERROR = true ]; then
-    echo "One or more library parameters unset. Estimating..."
+    LOG "One or more library parameters unset. Estimating..."
     python3 $QBAMSTAT $BAM > manifest.txt
     cat manifest.txt
 else
@@ -129,6 +138,7 @@ else
 fi
 
 # Run it
-echo time python3 $GRMPY -i $JSON -b $VCF -m manifest.txt -r $REF -o $OUT -t $THREADS --verbose
+time python3 $GRMPY -i $JSON -b $VCF -m manifest.txt -r $REF -o $OUT -t $THREADS --verbose
 
+LOG "Finished Successfully"
 touch paragraph.success
