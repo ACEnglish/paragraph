@@ -130,7 +130,7 @@ fi
 
 if [ $HASERROR = true ]; then
     LOG "One or more library parameters unset. Estimating..."
-    python3 $QBAMSTAT $BAM > manifest.txt
+    python3 $QBAMSTAT $BAM $REF > manifest.txt
     cat manifest.txt
 else
     echo -e "#id\tpath\tdepth\tread length" > manifest.txt

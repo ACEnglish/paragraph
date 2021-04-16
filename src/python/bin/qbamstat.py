@@ -5,7 +5,8 @@ import pysam
 
 random.seed(42)
 bam_name = sys.argv[1]
-bam = pysam.AlignmentFile(bam_name)
+ref_name = sys.argv[2]
+bam = pysam.AlignmentFile(bam_name, reference_filename=ref_name)
 sample = bam.header["RG"][0]["SM"]
 chrom = bam.get_reference_name(next(bam).tid)
 reflen = bam.get_reference_length(chrom)
