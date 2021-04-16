@@ -27,6 +27,6 @@ WORKDIR /opt/paragraph-build
 RUN cmake /opt/paragraph-source -DCMAKE_INSTALL_PREFIX=/opt/paragraph && make && make install
 RUN rm -rf /opt/paragraph-source
 
-ADD src/sh/run_paragraph.sh .
+WORKDIR /data
 
-ENTRYPOINT ["/bin/bash", "run_paragraph.sh"]
+ENTRYPOINT ["/bin/bash", "/opt/paragraph-build/src/sh/run_paragraph.sh"]

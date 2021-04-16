@@ -209,10 +209,10 @@ Build/Run the docker file with commands:
 
 ```bash
 docker build -t paragraph .
-docker run -v `pwd`:/data -it paragraph -v /data/na12878.vcf.gz \
-					-j /data/na12878.json \
-					-b /data/na12878.bam \
-					-r /data/reference.fasta
+docker run -v `pwd`:/data -it paragraph -v na12878.vcf.gz \
+					-j na12878.json \
+					-b na12878.bam \
+					-r reference.fasta
 ```
 
 Where `pwd` can be whatever directory you'd like to mount in the docker to the path `/data/`
